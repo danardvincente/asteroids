@@ -1,6 +1,10 @@
-import pygame
+import pygame, sys
 from constants import *
 from player import *
+from asteroid import *
+from asteroidfield import *
+from shot import *
+
 
 
 def main():
@@ -14,11 +18,18 @@ def main():
 
 	updatable = pygame.sprite.Group()
 	drawable = pygame.sprite.Group()
+	asteroids = pygame.sprite.Group()
+	shots = pygame.sprite.Group()
+
 
 	Player.containers = (updatable, drawable)  # Player.containers dynamically create containers as static variable
+	Asteroid.containers = (asteroids, updatable, drawable)
+	AsteroidField.containers = (updatable)
+	Shot.containers = (shots, updatable, drawable)
+
 
 	the_player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-	
+	the_asteroids = AsteroidField()
 
 
 	while True:
@@ -30,6 +41,20 @@ def main():
 			
 		# the_player.update(dt) # moves player left/right etc. based on key input [wasd]
 		updatable.update(dt) # using pygame groups to manage game object
+
+		# when player collides with an asteroid
+		for asterd in asteroids:
+			if asterd.collisons(the_player):
+				print("Game Over!")
+				sys.exit()
+
+		# when bullet collides with asteroid
+		for ast in asteroids:
+			for shot in shots:
+				if shot.collisons(ast):
+					ast.split()
+					shot.kill()
+
 
 		screen.fill("black")
 
